@@ -50,5 +50,6 @@ if item:
     pc.addAttr(object_set, longName="path", dataType="string")
     object_set.path.set(path)
 
+    object_set.add(pc.PyNode("rig"))
     for member in pc.PyNode("rig_controllers_grp").members():
         object_set.add(pc.PyNode(member))
