@@ -35,8 +35,11 @@ for json_file in json_files:
             continue
         mesh = pc.PyNode(mesh_name)
         targets.append(mesh)
+
+        pc.select(clear=True)
+        pc.select(joints, mesh)
         skinCluster = pc.skinCluster(
-            joints, mesh, skinMethod=2, removeUnusedInfluence=False
+            toSelectedBones=True, skinMethod=2, removeUnusedInfluence=False
         )
         data.saveTo(mesh.name())
 
@@ -44,6 +47,7 @@ if mismatch_files:
     mgear.log(
         "Missing meshes for files:\n{0}".format("\n".join(mismatch_files))
     )
+
 
 # Reconstruct ngskintools set.
 if pc.objExists("ngskintools"):
