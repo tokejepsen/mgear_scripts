@@ -33,6 +33,9 @@ if os.path.exists(path):
 
             # Add target.
             if not pm.objExists(data["target"]):
+                if not pm.objExists(data["target"].split(".")[0]):
+                    continue
+
                 pm.PyNode(data["target"].split(".")[0]).addAttr(
                     data["target"].split(".")[1]
                 )
