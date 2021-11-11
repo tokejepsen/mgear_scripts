@@ -38,9 +38,10 @@ for json_file in json_files:
 
         pc.select(clear=True)
         pc.select(joints, mesh)
-        skinCluster = pc.skinCluster(
+        skin_cluster = pc.skinCluster(
             toSelectedBones=True, skinMethod=2, removeUnusedInfluence=False
         )
+        pc.rename(skin_cluster, "{}_skin_cluster".format(mesh_name))
         data.saveTo(mesh.name())
 
 if mismatch_files:
