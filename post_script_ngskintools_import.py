@@ -37,7 +37,7 @@ for json_file in json_files:
         targets.append(mesh)
 
         pc.select(clear=True)
-        pc.select(joints, mesh)
+        pc.select(sorted(joints), mesh)
         skin_cluster = pc.skinCluster(
             toSelectedBones=True, skinMethod=2, removeUnusedInfluence=False
         )
