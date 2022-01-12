@@ -30,6 +30,7 @@ for json_file in json_files:
 
         # Find mesh from filename
         mesh_name = os.path.splitext(os.path.basename(json_file))[0]
+        print(mesh_name)
         if not pc.objExists(mesh_name):
             mismatch_files.append(json_file)
             continue
