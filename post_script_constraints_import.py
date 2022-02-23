@@ -40,6 +40,14 @@ if os.path.exists(path):
                 if not pc.objExists(source["node"]):
                     continue
 
+                print(
+                    "{} from {} to {}".format(
+                        data["type"] + "Constraint",
+                        source["node"],
+                        data["target"]
+                    )
+                )
+
                 constraint = method(
                     source["node"],
                     data["target"],
