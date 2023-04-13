@@ -238,6 +238,7 @@ def main():
     if pc.objExists("ffds"):
         data = {}
         for node in pc.PyNode("ffds").members():
+            print(node)
             ffds = node.getShape().listConnections(type="ffd")
             for ffd in ffds:
                 try:
