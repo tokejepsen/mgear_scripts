@@ -19,7 +19,21 @@ def main():
     # Export connections.
     if pc.objExists("connections"):
         json_data = []
-        valid_attributes = ["translate", "rotate", "scale", "visibility"]
+        valid_attributes = [
+            "translate",
+            "translateX",
+            "translateY",
+            "translateZ",
+            "rotate",
+            "rotateX",
+            "rotateY",
+            "rotateZ",
+            "scale",
+            "scaleX",
+            "scaleY",
+            "scaleZ",
+            "visibility"
+        ]
 
         for node in pc.PyNode("connections").members():
             connections = node.listConnections(
