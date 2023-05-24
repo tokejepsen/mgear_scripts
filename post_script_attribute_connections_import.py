@@ -5,7 +5,8 @@ Json file schema:
         "source": "eye_L_over_ctl.blink",
         "target": "eye_L0_ik_ctl.blink",
         "keyable": true,
-        "channelBox": true
+        "channelBox": true,
+        "sourceDataType": "bool"
     }
 ]
 """
@@ -27,8 +28,9 @@ if os.path.exists(path):
         for data in json.load(f):
             # Add source.
             if not pm.objExists(data["source"]):
+                attribute_type = data.get("sourceDataType", "float")
                 pm.PyNode(data["source"].split(".")[0]).addAttr(
-                    data["source"].split(".")[1]
+                    data["source"].split(".")[1], attributeType=attribute_type
                 )
 
             # Add target.
