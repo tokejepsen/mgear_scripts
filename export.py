@@ -58,12 +58,15 @@ def main():
                 if source not in source.node().listAttr(userDefined=True):
                     continue
 
-                json_data.append({
+                data = {
                     "source": str(source),
                     "target": str(target),
                     "keyable": target.get(keyable=True),
                     "channelBox": target.get(channelBox=True)
-                })
+                }
+                if target.type() == "bool":
+                    data["sourceDataType"] = "bool"
+                json_data.append(data)
 
         path = os.path.join(directory, filename, "connections.json")
         with open(path, "w") as f:
