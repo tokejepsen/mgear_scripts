@@ -27,7 +27,7 @@ else:
 path = os.path.join(directory, filename, "ffds.json")
 if os.path.exists(path):
     with open(path) as f:
-        for key, value in json.load(f).iteritems():
+        for key, value in json.load(f).items():
             for node_name in value:
                 pc.lattice(key, e=True, remove=False, geometry=node_name)
                 ffds_set.add(node_name)

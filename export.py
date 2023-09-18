@@ -3,7 +3,8 @@ import shutil
 import json
 
 import pymel.core as pc
-import ngSkinTools.importExport
+from maya import cmds
+from ngSkinTools2 import api as ngst_api
 from studiolibrarymaya import poseitem, animitem
 from mgear.shifter import guide_manager
 
@@ -62,10 +63,14 @@ def main():
                     "source": str(source),
                     "target": str(target),
                     "keyable": target.get(keyable=True),
-                    "channelBox": target.get(channelBox=True)
+                    "channelBox": target.get(channelBox=True),
+                    "defaultValue": cmds.attributeQuery(
+                        str(source).split(".")[1],
+                        node=str(source.node()),
+                        listDefault=True
+                    )[0],
+                    "attributeType": target.type()
                 }
-                if target.type() == "bool":
-                    data["sourceDataType"] = "bool"
                 json_data.append(data)
 
         path = os.path.join(directory, filename, "connections.json")
@@ -80,13 +85,9 @@ def main():
 
         for mesh in pc.PyNode("ngskintools").members():
             print("Exporting ngskintools on: {}".format(mesh.name()))
-            data = ngSkinTools.importExport.LayerData()
-            data.loadFrom(mesh.name())
-            exporter = ngSkinTools.importExport.JsonExporter()
 
             filepath = os.path.join(path, "{}.json".format(mesh.name()))
-            with open(filepath, "w") as f:
-                f.write(exporter.process(data))
+            ngst_api.export_json(mesh.name(), file=filepath)
 
     # studiolibrary export
     modes = ["final", "wip"]

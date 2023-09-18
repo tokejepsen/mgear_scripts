@@ -1,7 +1,7 @@
 import os
 
 import pymel.core as pc
-import ngSkinTools.importExport
+from ngSkinTools2.api import InfluenceMappingConfig, VertexTransferMode
 import mgear
 
 
