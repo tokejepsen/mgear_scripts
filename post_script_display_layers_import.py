@@ -14,7 +14,7 @@ directory = os.path.dirname(pymel.core.sceneName())
 path = os.path.join(directory, filename, "display_layers.json")
 if os.path.exists(path):
     with open(path, "r") as f:
-        for layer_name, data in json.load(f).iteritems():
+        for layer_name, data in json.load(f).items():
             if not pymel.core.objExists(layer_name):
                 pymel.core.createDisplayLayer(name=layer_name, empty=True)
 
