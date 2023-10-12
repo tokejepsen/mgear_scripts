@@ -100,9 +100,10 @@ def order_verts_by_edge_connection(connected_verts, results=[]):
     """
     Orders connected verts by edge connection.
     """
-    next_verts = list(
-        set(results[-1].connectedVertices()) & set(connected_verts)
-    )
+    next_verts = []
+    for vert in results[-1].connectedVertices():
+        if vert in connected_verts:
+            next_verts.append(vert)
     for vert in next_verts:
         if vert not in results:
             results.append(vert)
@@ -129,7 +130,7 @@ def extract_organization_keys(data):
 
 
 def organize_results(data, **kwargs):
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         if value is None or not value:
             continue
 
@@ -254,8 +255,11 @@ def _rig(mesh=None,
 
     # Split boundary edges into borders
     first_edge_border = [border_edges[0]]
+    second_edge_border = list(border_edges)
     for count in range(0, len(connecting_edges)):
         for edge in first_edge_border:
+            if edge in second_edge_border:
+                second_edge_border.remove(edge)
             for connected_edge in edge.connectedEdges():
                 if not connected_edge.isOnBoundary():
                     continue
@@ -263,16 +267,16 @@ def _rig(mesh=None,
                     continue
 
                 first_edge_border.append(connected_edge)
-    second_edge_border = list(
-        set(border_edges) - set(first_edge_border)
-    )
+
     border_edges = second_edge_border
     if flip_direction:
         border_edges = first_edge_border
     boundary_verts = []
     for edge in border_edges:
-        boundary_verts.extend(edge.connectedVertices())
-    boundary_verts = list(set(boundary_verts))
+        for vert in edge.connectedVertices():
+            if vert in boundary_verts:
+                continue
+            boundary_verts.append(vert)
 
     # Order boundary verts by connection.
     ordered_verts = [boundary_verts[0]]
@@ -294,9 +298,12 @@ def _rig(mesh=None,
     # Place joints.
     joints = []
     for edge in ordered_edges:
-        up_vector_position = list(
-            set(edge.connectedVertices()) & set(ordered_verts)
-        )[0].getPosition(space="world")
+        up_vector_position = None
+        for vert in edge.connectedVertices():
+            if vert in ordered_verts:
+                up_vector_position = vert.getPosition(space="world")
+                break
+
         joint = create_edge_joint(
             edge, up_vector_position, up_vector_highest
         )
@@ -517,14 +524,17 @@ def _rig(mesh=None,
         )
         edge_count = len(pm.ls(selection=True, flatten=True))
         connected_verts = [pair[0]]
-        for count in range(0, edge_count / 2):
-            nearest_verts = set(
-                pm.ls(connected_verts[-1].connectedVertices(), flatten=True)
+        for count in range(0, edge_count // 2):
+            temp_verts = pm.ls(
+                connected_verts[-1].connectedVertices(), flatten=True
             )
-            familiar_verts = nearest_verts & set(verts)
-            connected_verts.append(
-                list(familiar_verts - set(connected_verts))[0]
-            )
+            for vert in temp_verts:
+                if vert in connected_verts:
+                    continue
+                if vert in verts:
+                    connected_verts.append(vert)
+                    break
+
         middle_verts.append(connected_verts[-1])
 
     pm.select(clear=True)
@@ -593,10 +603,11 @@ def _rig(mesh=None,
                 closest_distance = distance
                 closest_border_vert = border_vert
 
-        connected_verts = (
-            set(pm.ls(middle_vert.connectedVertices(), flatten=True)) -
-            set(middle_verts)
-        )
+        connected_verts = []
+        for vert in pm.ls(middle_vert.connectedVertices(), flatten=True):
+            if vert in middle_verts:
+                continue
+            connected_verts.append(vert)
         closest_distance = None
         closest_connected_vert = None
         for connected_vert in connected_verts:

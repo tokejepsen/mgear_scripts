@@ -1,12 +1,15 @@
 import os
 import sys
 import json
+import importlib
 
 import pymel.core as pm
 
 sys.path.append(os.path.dirname(__file__))
 
 import shrinkwrap_rigger
+
+importlib.reload(shrinkwrap_rigger)
 
 
 basename = os.path.basename(pm.sceneName())
