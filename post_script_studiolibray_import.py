@@ -23,10 +23,12 @@ for stage in modes:
 # Loading an animation item
 mode = pc.PyNode("guide").mode.get()
 item = None
+objects = []
 
 f = anim_files["anim"][modes[mode]]
 if f:
     item = animitem.AnimItem(f)
+    objects.extend(item.transferObject().objects().keys())
     item.load(
         option="replace all",
         connect=False,
@@ -37,6 +39,7 @@ if f:
 f = anim_files["pose"][modes[mode]]
 if f:
     item = poseitem.PoseItem(f)
+    objects.extend(item.transferObject().objects().keys())
     item.load()
 
 # Reconstruct studiolibrary set.
@@ -53,3 +56,7 @@ if item:
     object_set.add(pc.PyNode("rig"))
     for member in pc.PyNode("rig_controllers_grp").members():
         object_set.add(pc.PyNode(member))
+
+    for object in objects:
+        if pc.objExists(object):
+            object_set.add(pc.PyNode(object))
