@@ -29,7 +29,9 @@ if os.path.exists(path):
                     mgear.log(
                         "Missing {0} for layer: {1}".format(member, layer_name)
                     )
-            layer.addMembers(members)
+            for member in members:
+                mgear.log("Adding {} to {}".format(member, layer))
+                layer.addMembers([member])
 
             # Set visibility
             layer.visibility.set(data["visibility"])
