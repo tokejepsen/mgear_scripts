@@ -89,42 +89,6 @@ def main():
             filepath = os.path.join(path, "{}.json".format(mesh.name()))
             ngst_api.export_json(mesh.name(), file=filepath)
 
-    # studiolibrary export
-    modes = ["final", "wip"]
-    mode = modes[pc.PyNode("guide").mode.get()]
-    export_type = "pose"
-    exporter = poseitem
-    options = {}
-
-    # Export anim when mode is "wip".
-    if mode == "wip":
-        export_type = "anim"
-        exporter = animitem
-        options.update(
-            {
-                "startFrame": pc.playbackOptions(query=True, minTime=True),
-                "endFrame": pc.playbackOptions(query=True, maxTime=True),
-                "bakeConnected": False
-            }
-        )
-
-    if pc.objExists("studiolibrary"):
-        options = {
-            "objects": [x.name() for x in pc.PyNode("studiolibrary").members()]
-        }
-
-        path = os.path.join(
-            directory,
-            filename,
-            "studiolibrary",
-            "{}.{}".format(mode, export_type)
-        )
-
-        if os.path.exists(path):
-            shutil.rmtree(path)
-
-        exporter.save(path, **options)
-
     # Export constraints.
     json_data = []
     constraint_types = [
@@ -252,21 +216,43 @@ def main():
             with open(path, "w") as f:
                 json.dump(data[basename], f, sort_keys=True, indent=4)
 
-    # Export ffds.
-    if pc.objExists("ffds"):
-        data = {}
-        for node in pc.PyNode("ffds").members():
-            print(node)
-            ffds = node.getShape().listConnections(type="ffd")
-            for ffd in ffds:
-                try:
-                    data[ffd.name()].append(node.name())
-                except KeyError:
-                    data[ffd.name()] = [node.name()]
+    # studiolibrary export
+    modes = ["final", "wip"]
+    mode = modes[pc.PyNode("guide").mode.get()]
+    export_type = "anim" if mode == "wip" else "pose"
+    path = os.path.join(
+        directory,
+        filename,
+        "studiolibrary",
+        "{}.{}".format(mode, export_type)
+    )
+    exporter = poseitem.PoseItem(path)
+    options = {}
 
-        path = os.path.join(directory, filename, "ffds.json")
-        with open(path, "w") as f:
-            json.dump(data, f, sort_keys=True, indent=4)
+    if mode == "wip":
+        exporter = animitem
+        options.update(
+            {
+                "startFrame": pc.playbackOptions(query=True, minTime=True),
+                "endFrame": pc.playbackOptions(query=True, maxTime=True),
+                "bakeConnected": False,
+                "path": path
+            }
+        )
+
+    if pc.objExists("studiolibrary"):
+        options.update(
+            {
+                "objects": [
+                    x.name() for x in pc.PyNode("studiolibrary").members()
+                ]
+            }
+        )
+
+        if os.path.exists(path):
+            shutil.rmtree(path)
+
+        exporter.save(**options)
 
 
 if __name__ == "__main__":
