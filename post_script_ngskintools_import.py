@@ -29,7 +29,7 @@ for json_file in json_files:
 
     importer = api.transfer.LayersTransfer()
     importer.vertex_transfer_mode = (
-        api.transfer.VertexTransferMode.closestPoint
+        api.transfer.VertexTransferMode.vertexId
     )
     importer.influences_mapping.config = config
     importer.load_source_from_file(path, "json")
