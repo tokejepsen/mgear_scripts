@@ -15,6 +15,7 @@ import os
 import json
 
 import pymel.core as pm
+from maya import cmds
 
 
 basename = os.path.basename(pm.sceneName())
@@ -51,10 +52,17 @@ if os.path.exists(path):
             source = pm.PyNode(data["source"])
             target = pm.PyNode(data["target"])
 
-            source.set(channelBox=data.get("channelBox", True))
-            source.set(keyable=data.get("keyable", True))
-            target.set(channelBox=data.get("channelBox", False))
-            target.set(keyable=data.get("keyable", False))
+            if not cmds.referenceQuery(
+                source.node().name(), isNodeReferenced=True
+            ):
+                source.set(channelBox=data.get("channelBox", True))
+                source.set(keyable=data.get("keyable", True))
+
+            if not cmds.referenceQuery(
+                target.node().name(), isNodeReferenced=True
+            ):
+                target.set(channelBox=data.get("channelBox", False))
+                target.set(keyable=data.get("keyable", False))
 
             source >> target
 
