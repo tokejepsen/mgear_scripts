@@ -31,6 +31,7 @@ if os.path.exists(path):
     with open(path, "r") as f:
         for data in json.load(f):
             if not pc.objExists(data["target"]):
+                print("Missing target:\n{}".format(data))
                 continue
 
             targets.append(data["target"])
@@ -38,6 +39,7 @@ if os.path.exists(path):
 
             for source in data["sources"]:
                 if not pc.objExists(source["node"]):
+                    print("Missing source:\n{}".format(data))
                     continue
 
                 print(
