@@ -53,6 +53,7 @@ for json_file in json_files:
     skin_cluster = pc.skinCluster(
         toSelectedBones=True, skinMethod=2, removeUnusedInfluence=False
     )
+    skin_cluster.dqsSupportNonRigid.set(True)
     pc.rename(skin_cluster, "{}_skin_cluster".format(mesh_name))
     importer.execute()
 
