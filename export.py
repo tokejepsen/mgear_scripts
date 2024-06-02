@@ -254,6 +254,15 @@ def main():
 
         exporter.save(**options)
 
+    if pc.objExists("exclude_controls"):
+        data = []
+        for node in pc.PyNode("exclude_controls").members():
+            data.append(node.name())
+
+        path = os.path.join(directory, filename, "exclude_controls.json")
+        with open(path, "w") as f:
+            json.dump(data, f, sort_keys=True, indent=4)
+
 
 if __name__ == "__main__":
     main()
