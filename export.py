@@ -33,7 +33,8 @@ def main():
             "scaleX",
             "scaleY",
             "scaleZ",
-            "visibility"
+            "visibility",
+            "worldInverseMatrix"
         ]
 
         for node in pc.PyNode("connections").members():
