@@ -17,6 +17,12 @@ else:
     pc.select(clear=True)
     controls_set = pc.sets(name="rigMain_controls_SET")
 
+joints_set = None
+if pc.objExists("rigMain_skeletonAnim_SET"):
+    joints_set = pc.PyNode("rigMain_skeletonAnim_SET")
+else:
+    pc.select(clear=True)
+    joints_set = pc.sets(name="rigMain_skeletonAnim_SET")
 
 basename = os.path.basename(pc.sceneName())
 filename = os.path.splitext(basename)[0]
@@ -43,3 +49,8 @@ if os.path.exists(path):
 
 controls_set.addMembers(controls)
 pc.PyNode("rigMain").addMembers([controls_set])
+
+if pc.objExists("rig_deformers_grp"):
+    joints = pc.PyNode("rig_deformers_grp").members()
+    joints_set.addMembers(joints)
+    pc.PyNode("rigMain").addMembers([joints_set])
