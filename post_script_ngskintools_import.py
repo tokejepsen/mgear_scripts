@@ -17,22 +17,37 @@ directory = os.path.dirname(pc.sceneName())
 json_files = []
 path = os.path.join(directory, filename, "ngskintools")
 if os.path.exists(path):
-    for f in os.listdir(path):
-        if f.endswith(".json"):
-            json_files.append(os.path.join(path, f))
+    # Walk through subdirectories to support namespace folders
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            if f.endswith(".json"):
+                json_files.append(os.path.join(root, f))
 
 mismatch_files = []
 targets = []
 for json_file in json_files:
-    path = os.path.join(directory, json_file)
-    mesh_name = os.path.splitext(os.path.basename(json_file))[0]
+    file_path = json_file
+    
+    # Calculate mesh name from relative path to support namespaces
+    ngskintools_path = os.path.join(directory, filename, "ngskintools")
+    relative_path = os.path.relpath(json_file, ngskintools_path)
+    
+    # Convert path separators back to namespace colons
+    if os.path.dirname(relative_path):
+        # Has subfolders (namespaces)
+        namespace_parts = os.path.dirname(relative_path).split(os.sep)
+        filename_part = os.path.splitext(os.path.basename(relative_path))[0]
+        mesh_name = ":".join(namespace_parts + [filename_part])
+    else:
+        # No subfolders (no namespaces)
+        mesh_name = os.path.splitext(os.path.basename(relative_path))[0]
 
     importer = api.transfer.LayersTransfer()
     importer.vertex_transfer_mode = (
         api.transfer.VertexTransferMode.vertexId
     )
     importer.influences_mapping.config = config
-    importer.load_source_from_file(path, "json")
+    importer.load_source_from_file(file_path, "json")
     importer.target = mesh_name
     joints = []
     for influence_info in importer.influences_mapping.influences:

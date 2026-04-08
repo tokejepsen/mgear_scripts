@@ -87,8 +87,26 @@ def main():
         for mesh in pc.PyNode("ngskintools").members():
             print("Exporting ngskintools on: {}".format(mesh.name()))
 
-            filepath = os.path.join(path, "{}.json".format(mesh.name()))
-            ngst_api.export_json(mesh.name(), file=filepath)
+            mesh_name = mesh.name()
+            # Handle namespaces by creating subfolders
+            if ":" in mesh_name:
+                name_parts = mesh_name.split(":")
+                # Create subdirectory path for namespaces
+                namespace_path = os.path.join(path, *name_parts[:-1])
+                if not os.path.exists(namespace_path):
+                    os.makedirs(namespace_path)
+                # Use the last part as the filename
+                filepath = os.path.join(namespace_path, "{}.json".format(name_parts[-1]))
+            else:
+                filepath = os.path.join(path, "{}.json".format(mesh_name))
+            
+            try:
+                ngst_api.export_json(mesh.name(), file=filepath)
+                # Check if file was actually created
+                if not os.path.exists(filepath):
+                    cmds.warning("ngskintools export failed for '{}' - mesh may not have ngskintools setup".format(mesh.name()))
+            except Exception as e:
+                cmds.warning("ngskintools export failed for '{}' - {}".format(mesh.name(), str(e)))
 
     # Export constraints.
     json_data = []
